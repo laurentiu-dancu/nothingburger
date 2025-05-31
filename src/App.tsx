@@ -1,17 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Record from './pages/Record'
-import Match from './pages/Match'
+import React from 'react'
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 to-pink-500">
-        <Routes>
-          <Route path="/" element={<Record />} />
-          <Route path="/match" element={<Match />} />
-        </Routes>
-      </div>
-    </Router>
+    <div className="min-h-screen bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+      <h1 className="text-4xl font-bold text-white">Hello World! 👋</h1>
+    </div>
   )
 }
 
