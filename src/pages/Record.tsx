@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom'
 export default function Record() {
   const [isRecording, setIsRecording] = useState(false)
   const [audioURL, setAudioURL] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const mediaRecorder = useRef<MediaRecorder | null>(null)
   const navigate = useNavigate()
 
   const startRecording = async () => {
     try {
+      setError(null) // Clear any previous errors
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       mediaRecorder.current = new MediaRecorder(stream)
       const chunks: BlobPart[] = []
@@ -29,6 +31,16 @@ export default function Record() {
         }
       }, 10000)
     } catch (err) {
+      setIsRecording(false) // Reset recording state
+      if (err instanceof Error) {
+        if (err.name === 'NotAllowedError') {
+          setError('Microphone access was denied. Please grant permission to use your microphone.')
+        } else if (err.name === 'NotFoundError') {
+          setError('No microphone found. Please ensure a microphone is connected to your device.')
+        } else {
+          setError('An error occurred while accessing the microphone. Please try again.')
+        }
+      }
       console.error('Error accessing microphone:', err)
     }
   }
@@ -61,6 +73,12 @@ export default function Record() {
           >
             {isRecording ? 'Stop Recording' : 'Start Recording'}
           </button>
+
+          {error && (
+            <div className="w-full p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+              {error}
+            </div>
+          )}
 
           {audioURL && (
             <div className="w-full space-y-4">
