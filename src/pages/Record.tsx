@@ -1,14 +1,38 @@
 import React, { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+const RECORDING_SUGGESTIONS = [
+  "Tell us about your favorite travel memory",
+  "Describe your perfect weekend",
+  "What's your favorite book and why?",
+  "Share a funny story that always makes you laugh",
+  "What's your biggest dream or aspiration?"
+]
+
 export default function Record() {
   const [isRecording, setIsRecording] = useState(false)
   const [audioURL, setAudioURL] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [hint, setHint] = useState<string | null>(null)
   const mediaRecorder = useRef<MediaRecorder | null>(null)
   const navigate = useNavigate()
+  const hintTimeoutRef = useRef<number | null>(null)
+
+  React.useEffect(() => {
+    if (!isRecording && !audioURL && !hint) {
+      hintTimeoutRef.current = window.setTimeout(() => {
+        setHint(RECORDING_SUGGESTIONS[Math.floor(Math.random() * RECORDING_SUGGESTIONS.length)])
+      }, 5000)
+    }
+    return () => {
+      if (hintTimeoutRef.current) {
+        clearTimeout(hintTimeoutRef.current)
+      }
+    }
+  }, [isRecording, audioURL, hint])
 
   const startRecording = async () => {
+    setHint(null)
     try {
       setError(null) // Clear any previous errors
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -61,6 +85,12 @@ export default function Record() {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8">
         <h1 className="text-3xl font-bold text-center mb-8">Record Your Voice</h1>
+        
+        {hint && !isRecording && !audioURL && (
+          <p className="text-gray-600 text-center text-sm mb-4 animate-fade-in">
+            Suggestion: {hint}
+          </p>
+        )}
         
         <div className="flex flex-col items-center gap-4">
           <button
