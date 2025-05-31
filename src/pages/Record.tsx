@@ -86,11 +86,14 @@ export default function Record() {
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8">
         <h1 className="text-3xl font-bold text-center mb-8">Record Your Voice</h1>
         
-        {hint && !isRecording && !audioURL && (
-          <p className="text-gray-600 text-center text-sm mb-4 animate-fade-in">
-            Suggestion: {hint}
+        {/* Fixed height container to prevent layout shift when hint appears */}
+        <div className="h-6 mb-4">
+          {hint && !isRecording && !audioURL && (
+            <p className="text-gray-600 text-center text-sm animate-fade-in">
+              Suggestion: {hint}
           </p>
-        )}
+          )}
+        </div>
         
         <div className="flex flex-col items-center gap-4">
           <button
